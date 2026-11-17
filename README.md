@@ -93,3 +93,4 @@ Add the following to your MCP client configuration (e.g. `claude_desktop_config.
   }
 }
 ```
+
