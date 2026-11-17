@@ -2,7 +2,7 @@ import os
 import requests
 from dotenv import load_dotenv
 from mcp.server.fastmcp import FastMCP
-from mcp.server.fastmcp.server import TransportSecuritySettings
+from mcp.server.transport_security import TransportSecuritySettings
 from starlette.requests import Request
 from starlette.responses import JSONResponse
 
@@ -106,5 +106,10 @@ app = mcp.sse_app()
 
 if __name__ == "__main__":
     # When deployed to Render or when PORT is set, default to SSE transport
-    transport = os.getenv("MCP_TRANSPORT", "sse" if "PORT" in os.environ else "stdio")
-    mcp.run(transport=transport)
+    transport_mode = os.getenv("MCP_TRANSPORT", "sse" if "PORT" in os.environ else "stdio")
+    if transport_mode == "sse":
+        mcp.run(transport="sse")
+    elif transport_mode == "streamable-http":
+        mcp.run(transport="streamable-http")
+    else:
+        mcp.run(transport="stdio")
