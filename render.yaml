@@ -11,7 +11,6 @@ services:
       - key: OPENWEATHER_API_KEY
         sync: false
       - key: MCP_TRANSPORT
-        value: sse
+        value: streamable-http
       - key: HOST
         value: 0.0.0.0
-

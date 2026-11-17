@@ -6,7 +6,7 @@ A Model Context Protocol (MCP) server that provides real-time weather and foreca
 
 - **`get_current_weather(city)`**: Returns temperature, feels-like, humidity, condition, and wind speed.
 - **`get_forecast(city)`**: Returns a 5-step forecast for the requested city.
-- **SSE Transport**: Runs over Server-Sent Events (SSE) for cloud hosting on platforms like Render.
+- **Streamable HTTP Transport**: Operates over Streamable HTTP (`/mcp`) for cloud hosting on platforms like Render.
 - **Built-in Health Checks**: Endpoints at `/` and `/health` for uptime monitoring and browser verification.
 
 ---
@@ -37,13 +37,13 @@ A Model Context Protocol (MCP) server that provides real-time weather and foreca
    ```
 
 4. **Run the server locally**:
-   - **Local stdio mode** (for local MCP clients):
+   - **Local stdio mode** (for local CLI/desktop MCP clients):
      ```bash
      python mcp_server.py
      ```
-   - **Local SSE mode** (web server):
+   - **Local HTTP mode** (web server):
      ```bash
-     MCP_TRANSPORT=sse PORT=8000 python mcp_server.py
+     MCP_TRANSPORT=streamable-http PORT=8000 python mcp_server.py
      ```
      Visit `http://localhost:8000` or `http://localhost:8000/health` in your browser.
 
@@ -55,7 +55,7 @@ A Model Context Protocol (MCP) server that provides real-time weather and foreca
 1. Push this repository to GitHub.
 2. In the [Render Dashboard](https://dashboard.render.com/), click **New +** > **Blueprint**.
 3. Connect your GitHub repository. Render reads [`render.yaml`](render.yaml) automatically.
-4. Under Environment Variables, set your `OPENWEATHER_API_KEY`.
+4. When prompted, enter your `OPENWEATHER_API_KEY`.
 5. Click **Apply**.
 
 ### Option 2: Manual Web Service
@@ -70,27 +70,26 @@ A Model Context Protocol (MCP) server that provides real-time weather and foreca
 4. Add the following **Environment Variables**:
    - `OPENWEATHER_API_KEY`: *(Your OpenWeather API key)*
    - `PYTHON_VERSION`: `3.11.10`
-   - `MCP_TRANSPORT`: `sse`
+   - `MCP_TRANSPORT`: `streamable-http`
    - `HOST`: `0.0.0.0`
 5. Click **Deploy Web Service**.
 
 Once deployed, your MCP server will be live at:
-- **SSE Endpoint**: `https://<your-subdomain>.onrender.com/sse`
+- **HTTP Endpoint**: `https://<your-subdomain>.onrender.com/mcp`
 - **Health Check**: `https://<your-subdomain>.onrender.com/health`
 
 ---
 
 ## Connecting to MCP Clients (Cursor, Claude Desktop, etc.)
 
-Add the following to your MCP client configuration (e.g. `claude_desktop_config.json` or Cursor Settings):
+Add the following to your MCP client configuration:
 
 ```json
 {
   "mcpServers": {
     "weather": {
-      "url": "https://<your-subdomain>.onrender.com/sse"
+      "url": "https://<your-subdomain>.onrender.com/mcp"
     }
   }
 }
 ```
-

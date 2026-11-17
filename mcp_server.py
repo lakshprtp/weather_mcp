@@ -29,8 +29,8 @@ async def root(request: Request) -> JSONResponse:
         {
             "status": "online",
             "service": "Weather MCP Server",
-            "sse_endpoint": "/sse",
-            "messages_endpoint": "/messages/",
+            "transport": "streamable-http",
+            "endpoint": "/mcp",
         }
     )
 
@@ -101,15 +101,16 @@ def get_forecast(city: str):
     }
 
 
-# Expose ASGI application
-app = mcp.sse_app()
+# Selected transport: defaults to streamable-http for cloud/web deployments
+transport_mode = os.getenv("MCP_TRANSPORT", "streamable-http" if "PORT" in os.environ else "stdio")
+
+# Expose ASGI application (streamable_http_app for HTTP transport)
+app = mcp.streamable_http_app() if transport_mode == "streamable-http" else mcp.sse_app()
 
 if __name__ == "__main__":
-    # When deployed to Render or when PORT is set, default to SSE transport
-    transport_mode = os.getenv("MCP_TRANSPORT", "sse" if "PORT" in os.environ else "stdio")
-    if transport_mode == "sse":
-        mcp.run(transport="sse")
-    elif transport_mode == "streamable-http":
+    if transport_mode == "streamable-http":
         mcp.run(transport="streamable-http")
+    elif transport_mode == "sse":
+        mcp.run(transport="sse")
     else:
         mcp.run(transport="stdio")
